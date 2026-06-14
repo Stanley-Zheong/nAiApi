@@ -14,7 +14,27 @@ cp ../new-api-macos ../new-api
 ```
 
 **Option B: Build from source (requires Go)**
-TODO
+
+Requires **Go 1.25+** and a **C compiler** — the backend is built with `CGO_ENABLED=1`.
+
+`main.go` embeds the web assets via `//go:embed web/default/dist` and `//go:embed web/classic/dist`, so the **frontend must be built first** or the Go build will fail.
+
+```bash
+# From the repo root
+
+# 1. Build both frontends (requires bun)
+make build-all-frontends
+
+# 2. Build the Go backend into ./new-api (./new-api.exe on Windows)
+CGO_ENABLED=1 go build -ldflags="-s -w" -o new-api
+```
+
+The resulting `./new-api` at the repo root is the same binary Option A copies into place, so the Electron app (`cd electron && npm start`) picks it up automatically. To build the packaged desktop app for your current platform in one step, use the helper script instead:
+
+```bash
+cd electron
+./build.sh
+```
 
 ### 3. Electron Dependencies
 ```bash
