@@ -1,3 +1,56 @@
+<!-- ════════════════════════════════════════════════════════════════════
+  本说明由项目整理任务追加。以下为 cross-loop 工作副本（worktree）说明，
+  其下方完整保留了上游 new-api / QuantumNous 的原始 README，未作任何改动。
+  ════════════════════════════════════════════════════════════════════ -->
+
+> ## ⚙️ 这是 `nAiApi` 的 cross-loop 工作副本（worktree），不是独立项目
+>
+> **📌 项目速览** ｜ 项目类型：商业化项目（nAiApi 的 worktree） ｜ 关注等级：高 ｜
+> 阻塞点：无（Claude 测试修复任务已 done） ｜ 恢复条件：将 `loop/fix-claude-tests` 分支 PR 合回 `nAiApi` ｜ 整理日期：2026-06-08
+>
+> 本目录是主仓库 [`../nAiApi`](../nAiApi) 的一个 **git worktree**（`.git` 为文件而非目录），
+> 由 [`../cross-loop`](../cross-loop) 编排器驱动，在隔离分支上自动跑「修复任务」循环。
+> 代码本体、架构与约束与 `nAiApi` 完全一致，请以 `nAiApi/README.md` 与 `CLAUDE.md` 为准。
+>
+> **目标**：用 Claude Code（opus）自动诊断并修复 `relay/channel/claude` 的失败测试，
+> 验证通过（`go test` 绿 + `go vet` 干净）才标记 done，全程无人值守。
+>
+> **当前进展**（截至 `.cross-loop.state.json`，2026-06-07）：
+> - 分支：`loop/fix-claude-tests`，领先 `main` 一个提交。
+> - 任务 `fix-claude-filecontent-tests`：**已完成（done，1 次尝试通过）**。
+>   - 根因：上游 commit `03758a4a` 的 file-source 重构删除了内联文件处理，
+>     使 `ContentTypeFile` 走通用分支、丢失文件名 → MIME 推断错误
+>     （`spec.pdf`/`notes.txt` 被误当作 image，`blob.bin` 未被跳过）。
+>   - 修复：在 `relay/channel/claude/relay-claude.go` 恢复专用文件处理
+>     （`createClaudeFileSource` 按扩展名推断 MIME、`buildClaudeFileMessage`
+>     分流 pdf→document / text/plain→解码 text / 其他→跳过），未改测试期望值。
+>
+> **与 `nAiApi` 主仓库的差异**：本副本含 `.cross-loop.state.json` / `.loop.log`
+> 等循环运行产物，并对 `relay/channel/claude/relay-claude.go`、`middleware/cors.go`、
+> `common/utils.go`、`web/default/package.json` 等有未合并改动。
+>
+> **注意事项 / 约束**：
+> - 这是临时工作副本，**改动应通过 PR 合回 `nAiApi`**，不要把它当长期独立仓库维护。
+> - 已知遗留：`go build ./...` 会因 `web/classic/dist` embed 缺失而失败，
+>   稳定门禁是 `go build ./relay/...` 与单包 `go test`（与主仓库一致）。
+> - 遵守主仓库 `CLAUDE.md` 全部规则，尤其 **Rule 5：禁止修改/删除 new-api、
+>   QuantumNous 相关品牌与署名信息**（下方原 README 即受此保护）。
+>
+> ---
+>
+> *以下为上游原始 README（保持原样）：*
+
+## Multica 项目信息
+
+| 字段 | 内容 |
+|---|---|
+| **项目名称** | nAiApi-loop |
+| **Multica 项目 ID** | `da40013c-514f-4974-b7a3-d93ec3bc753c` |
+| **负责人** | `hgpt`（agent，`a58a7982-e2e0-4cb9-8710-d2e6cdab0351`） |
+| **GitHub** | `https://github.com/Stanley-Zheong/nAiApi.git` |
+| **本地目录** | `/Users/laosanzheong/Documents/codebases/nAiApi-loop` |
+| **运行环境** | 与 `../nAiApi` 主仓库一致：Go 1.25.1 + Gin/GORM，前端用 Bun；该目录是 `loop/fix-claude-tests` worktree，稳定门禁为 `go build ./relay/...` 与相关单包 `go test`。 |
+
 <div align="center">
 
 ![new-api](/web/default/public/logo.png)
