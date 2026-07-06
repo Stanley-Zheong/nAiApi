@@ -14,9 +14,32 @@ cp ../new-api-macos ../new-api
 ```
 
 **Option B: Build from source (requires Go)**
-TODO
 
-### 3. Electron Dependencies
+Requires Go 1.25+ (see `../go.mod`) and a C compiler, since the build uses CGO (`CGO_ENABLED=1`).
+
+The Go binary embeds the compiled web frontend via `//go:embed` (`web/default/dist` and `web/classic/dist`), so you **must build the frontend first** — otherwise `go build` fails. Frontend builds use [Bun](https://bun.sh).
+
+```bash
+# From the repository root (one directory up from electron/)
+
+# 1. Build both frontends (default + classic)
+make build-all-frontends
+
+# 2. Compile the Go binary into the parent directory
+#    macOS / Linux:
+CGO_ENABLED=1 go build -ldflags="-s -w" -o new-api
+#    Windows:
+CGO_ENABLED=1 go build -ldflags="-s -w" -o new-api.exe
+```
+
+The resulting `new-api` (or `new-api.exe`) binary in the repository root is what the Electron app loads.
+
+> **Shortcut:** `electron/build.sh` runs the frontend build, the Go build, and the platform Electron package in one step. From the `electron/` directory:
+> ```bash
+> ./build.sh
+> ```
+
+### 2. Electron Dependencies
 ```bash
 cd electron
 npm install

@@ -24,6 +24,12 @@ import (
 )
 
 func OpenBrowser(url string) {
+	// Security: Validate URL before opening to prevent command injection
+	if !isValidURL(url) {
+		log.Printf("Invalid URL provided to OpenBrowser: %s", url)
+		return
+	}
+
 	var err error
 
 	switch runtime.GOOS {
@@ -37,6 +43,27 @@ func OpenBrowser(url string) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// isValidURL validates that the URL is safe to open
+func isValidURL(rawURL string) bool {
+	if rawURL == "" {
+		return false
+	}
+	// Parse the URL
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return false
+	}
+	// Only allow http and https schemes
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return false
+	}
+	// Ensure host is present
+	if u.Host == "" {
+		return false
+	}
+	return true
 }
 
 func GetIp() (ip string) {

@@ -1,0 +1,43 @@
+# cross-loop tasks for nAiApi (new-api fork) — LOCAL, not committed to the repo.
+# Run from anywhere with cross-loop installed:
+#   cross-loop run --tasks nAiApi/cross-loop.tasks.yaml --tool claude-code --model opus --memory
+#
+# GATE NOTES (verified 2026-06-07):
+#   - `go build ./...` FAILS: main.go embeds web/classic/dist (frontend not built).
+#   - `go vet ./relay/...` is noisy (pre-existing "unreachable code" in several adaptors).
+#   - `go test ./relay/...` and `go test ./relay/channel/...` have PRE-EXISTING failures
+#     (relay/helper, relay/channel/claude file-content tests).
+#   => The reliably-green gate is `go build ./relay/...`. Add scoped `go test` only for
+#      packages that are green today (e.g. ./relay/channel/aws/..., gemini, minimax).
+
+project: nAiApi
+cwd: /Users/laosanzheong/Documents/codebases/nAiApi
+defaults:
+  tool: claude-code
+  model: opus
+  max_retries: 4
+
+tasks:
+  # --- Candidate first task: fix the gate itself (real, bounded, green-able) ---
+  # relay/channel/claude has 3 failing tests about file-content handling.
+  # Fixing them makes `go test ./relay/channel/claude/...` green and hardens the gate.
+  - id: fix-claude-filecontent-tests
+    prompt: >
+      relay/channel/claude 有 3 个失败测试:
+      TestRequestOpenAI2ClaudeMessage_IgnoresUnsupportedFileContent /
+      _SupportsPDFFileContent / _ConvertsTextFileContentToText。
+      阅读这些测试和对应 adaptor 实现,诊断失败根因并修复实现代码。
+      除非确属测试本身写错,否则不要改测试期望值。
+    verify: "go build ./relay/... && go test ./relay/channel/claude/..."
+
+  # --- Template: the adaptor-batch pattern (one phase per provider) ---
+  # The sweet spot for cross-loop on this repo: the same change across ~40 adaptors
+  # under relay/channel/*. Fill in <CHANGE>, duplicate per provider, run with --memory
+  # so a fix learned on the first adaptor carries to the rest.
+  #
+  # - id: deepseek-<change>
+  #   prompt: "在 relay/channel/deepseek 做 <CHANGE>,与 relay/channel/openai 保持同构。"
+  #   verify: "go build ./relay/... && go test ./relay/channel/deepseek/..."
+  # - id: moonshot-<change>
+  #   prompt: "同上,作用于 relay/channel/moonshot。"
+  #   verify: "go build ./relay/... && go test ./relay/channel/moonshot/..."
