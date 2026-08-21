@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "evals": [
+    {
+      "id": "eval-route-repo-router",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "This nAiApi task spans relay and billing. Decide which repo-local skill owns the first pass and list secondary skills.",
+      "expected_route": ["naiapi-repo-router"],
+      "forbidden_routes": ["i18n-translate"],
+      "invariants": ["Cross-family ambiguity starts at the router instead of guessing from a single filename."],
+      "proof": ["Deterministic route_probe.py returned naiapi-repo-router for this prompt."],
+      "oracle_source": ".agents/skills/naiapi-repo-router/SKILL.md"
+    },
+    {
+      "id": "eval-route-relay-provider-adapters",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Add a new OpenAI-compatible provider adapter with model mapping, request conversion, streaming usage chunks, and StreamOptions support.",
+      "expected_route": ["naiapi-relay-channel-adapter"],
+      "forbidden_routes": ["naiapi-default-frontend"],
+      "invariants": ["Provider relay work routes to adapter guidance and must check streamSupportedChannels."],
+      "proof": ["Deterministic route_probe.py returned naiapi-relay-channel-adapter for this prompt."],
+      "oracle_source": "relay/channel/adapter.go"
+    },
+    {
+      "id": "eval-route-billing-pricing",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Update tiered billing expressions so len-based quota settlement and pre-consume snapshots stay consistent.",
+      "expected_route": ["naiapi-billing-pricing"],
+      "forbidden_routes": ["naiapi-persistence-migrations"],
+      "invariants": ["Tiered expression work must read pkg/billingexpr/expr.md first."],
+      "proof": ["Deterministic route_probe.py returned naiapi-billing-pricing for this prompt."],
+      "oracle_source": "pkg/billingexpr/expr.md"
+    },
+    {
+      "id": "eval-route-task-relay-lifecycle",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Fix a Sora video task remix where OtherRatios, ForcePreConsume, polling completion, and final refund are wrong.",
+      "expected_route": ["naiapi-task-relay-lifecycle"],
+      "forbidden_routes": ["naiapi-default-frontend"],
+      "invariants": ["Async task submit/poll/refund work routes to task lifecycle guidance."],
+      "proof": ["Deterministic route_probe.py returned naiapi-task-relay-lifecycle for this prompt."],
+      "oracle_source": "relay/relay_task.go"
+    },
+    {
+      "id": "eval-route-persistence-migrations",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Add a nullable column and migration for token persistence that works on SQLite, MySQL, and PostgreSQL.",
+      "expected_route": ["naiapi-persistence-migrations"],
+      "forbidden_routes": ["naiapi-relay-channel-adapter"],
+      "invariants": ["Cross-database schema work routes to persistence guidance."],
+      "proof": ["Deterministic route_probe.py returned naiapi-persistence-migrations for this prompt."],
+      "oracle_source": "model/main.go"
+    },
+    {
+      "id": "eval-route-identity-security",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Harden Passkey secure verification and ensure a user supplied webhook URL cannot bypass SSRF settings.",
+      "expected_route": ["naiapi-identity-security"],
+      "forbidden_routes": ["naiapi-billing-pricing"],
+      "invariants": ["Auth, passkey, webhook, payment, and SSRF trust boundaries route to security guidance."],
+      "proof": ["Deterministic route_probe.py returned naiapi-identity-security for this prompt."],
+      "oracle_source": "middleware/auth.go"
+    },
+    {
+      "id": "eval-route-default-frontend",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Implement a web/default channel settings screen using React 19, TanStack Router, Base UI, Tailwind, and translated labels.",
+      "expected_route": ["naiapi-default-frontend"],
+      "forbidden_routes": ["classic-to-default-sync"],
+      "invariants": ["Default frontend work routes to web/default guidance unless the user gives a classic sync commit."],
+      "proof": ["Deterministic route_probe.py returned naiapi-default-frontend for this prompt."],
+      "oracle_source": "web/default/AGENTS.md"
+    },
+    {
+      "id": "eval-route-classic-default-sync",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Given commit 8ca1033, compare web/classic changes with web/default and port missing behavior.",
+      "expected_route": ["classic-to-default-sync"],
+      "forbidden_routes": ["naiapi-default-frontend"],
+      "invariants": ["Commit-based classic/default parity requests route to the dedicated sync skill."],
+      "proof": ["Deterministic route_probe.py returned classic-to-default-sync for this prompt."],
+      "oracle_source": ".agents/skills/classic-to-default-sync/SKILL.md"
+    },
+    {
+      "id": "eval-route-i18n-translate",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Run the frontend i18n sync and translate missing keys in en, zh, fr, ru, ja, and vi locale JSON files.",
+      "expected_route": ["i18n-translate"],
+      "forbidden_routes": ["naiapi-relay-channel-adapter"],
+      "invariants": ["Locale completion routes to the dedicated i18n skill."],
+      "proof": ["Deterministic route_probe.py returned i18n-translate for this prompt."],
+      "oracle_source": ".agents/skills/i18n-translate/SKILL.md"
+    },
+    {
+      "id": "eval-route-shadcn-ui",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Use shadcn/ui to compose a command dialog in web/default with the project component aliases.",
+      "expected_route": ["shadcn-ui"],
+      "forbidden_routes": ["naiapi-billing-pricing"],
+      "invariants": ["shadcn-specific UI composition routes to shadcn-ui before generic frontend guidance."],
+      "proof": ["Deterministic route_probe.py returned shadcn-ui for this prompt."],
+      "oracle_source": ".agents/skills/shadcn-ui/SKILL.md"
+    },
+    {
+      "id": "eval-route-ops-release-diagnostics",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Fix Docker and release workflow failures caused by missing embedded frontend dist assets and add useful startup diagnostics.",
+      "expected_route": ["naiapi-ops-release-diagnostics"],
+      "forbidden_routes": ["i18n-translate"],
+      "invariants": ["Build, release, embedded dist, and diagnostics work routes to ops/release guidance."],
+      "proof": ["Deterministic route_probe.py returned naiapi-ops-release-diagnostics for this prompt."],
+      "oracle_source": "main.go"
+    },
+    {
+      "id": "eval-route-channel-distribution-concurrency",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Investigate channel selection concurrency, affinity cache behavior, rate limits, and provider retry distribution.",
+      "expected_route": ["naiapi-relay-channel-adapter"],
+      "forbidden_routes": ["naiapi-default-frontend"],
+      "invariants": ["Channel distribution concurrency stays with relay adapter guidance plus middleware/service authority."],
+      "proof": ["Deterministic route_probe.py returned naiapi-relay-channel-adapter for this prompt."],
+      "oracle_source": "middleware/distributor.go"
+    },
+    {
+      "id": "eval-route-diagnostics-observability",
+      "kind": "forward",
+      "status": "executed-pass",
+      "prompt": "Add performance metrics diagnostics and startup log evidence for an operational issue.",
+      "expected_route": ["naiapi-ops-release-diagnostics"],
+      "forbidden_routes": ["classic-to-default-sync"],
+      "invariants": ["Operational diagnostics route to ops/release diagnostics guidance."],
+      "proof": ["Deterministic route_probe.py returned naiapi-ops-release-diagnostics for this prompt."],
+      "oracle_source": "controller/performance.go"
+    }
+  ]
+}

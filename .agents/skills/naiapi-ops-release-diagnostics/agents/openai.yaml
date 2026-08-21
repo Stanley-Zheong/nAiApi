@@ -1,0 +1,7 @@
+interface:
+  display_name: "nAiApi Ops"
+  short_description: "Build, release, metrics, and diagnostics guidance."
+  brand_color: "#4B5563"
+  default_prompt: "Use $naiapi-ops-release-diagnostics to maintain this build, release, or diagnostics surface."
+policy:
+  allow_implicit_invocation: true

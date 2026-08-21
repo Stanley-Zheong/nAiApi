@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "repository": "Stanley-Zheong/nAiApi",
+  "fixed_revision": "23385008d692b6e6f255156cd820f231d3623d72",
+  "router": "naiapi-repo-router",
+  "coverage_file": "references/capability-coverage.json",
+  "evals_file": "evals/evals.json",
+  "dimensions": {
+    "implementation_anchors": "references/skill-depth.md",
+    "mechanical_controls": "scripts/audit_skill_depth.py",
+    "risk_promotion": "per skill record",
+    "runtime_hidden_forward_eval": "evals/evals.json",
+    "cross_repository_closure": "per skill record",
+    "drift_self_improve": "per skill record"
+  },
+  "skills": [
+    {
+      "name": "classic-to-default-sync",
+      "risk": "medium: incorrect parity mapping can miss user-visible behavior",
+      "level": "L1",
+      "authority": [".agents/skills/classic-to-default-sync/SKILL.md", "web/classic", "web/default"],
+      "entrypoints": ["git show <commit-id> -- web/classic", "web/default/src"],
+      "transitions": ["classic commit diff -> logical changes -> default counterparts -> parity implementation -> i18n/typecheck proof"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/classic-to-default-sync", "executed-pass: route eval eval-route-classic-default-sync"],
+      "forward_eval_ids": ["eval-route-classic-default-sync"],
+      "cross_repo": ["none: classic and default frontends are in this repository"],
+      "drift_watch": ["web/classic", "web/default", ".agents/skills/classic-to-default-sync/SKILL.md"]
+    },
+    {
+      "name": "i18n-translate",
+      "risk": "medium: missing locale keys break non-English frontend workflows",
+      "level": "L1",
+      "authority": [".agents/skills/i18n-translate/SKILL.md", "web/default/src/i18n", "web/default/src/i18n/locales"],
+      "entrypoints": ["cd web/default && bun run i18n:sync", "web/default/src/i18n/locales/{en,zh,fr,ru,ja,vi}.json"],
+      "transitions": ["t() usage -> sync report -> missing/untranslated scan -> locale updates -> sync verification"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/i18n-translate", "executed-pass: route eval eval-route-i18n-translate"],
+      "forward_eval_ids": ["eval-route-i18n-translate"],
+      "cross_repo": ["none: locale files are local to web/default"],
+      "drift_watch": ["web/default/src/i18n", "web/default/scripts", ".agents/skills/i18n-translate/SKILL.md"]
+    },
+    {
+      "name": "naiapi-billing-pricing",
+      "risk": "medium: quota or pricing mistakes directly affect billing",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-billing-pricing/SKILL.md", "pkg/billingexpr/expr.md", "pkg/billingexpr", "relay/helper/price.go", "service/billing_session.go", "service/tiered_settle.go"],
+      "entrypoints": ["pkg/billingexpr/expr.md", "relay/helper/price.go", "service/billing_session.go"],
+      "transitions": ["settings/model ratio -> expression compile/run -> pre-consume snapshot -> usage settlement -> log/pricing display"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-billing-pricing", "executed-pass: targeted Go tests include ./pkg/billingexpr ./service", "executed-pass: route eval eval-route-billing-pricing"],
+      "forward_eval_ids": ["eval-route-billing-pricing"],
+      "cross_repo": ["none: billing expression engine and pricing settings are local"],
+      "drift_watch": ["pkg/billingexpr/expr.md", "pkg/billingexpr", "service/tiered_settle.go", "relay/helper/price.go"]
+    },
+    {
+      "name": "naiapi-default-frontend",
+      "risk": "medium: frontend changes can break admin workflows or locale completeness",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-default-frontend/SKILL.md", "web/default/AGENTS.md", "web/default/package.json", "web/default/src/routes", "web/default/src/features"],
+      "entrypoints": ["web/default/src/routes", "web/default/src/features", "web/default/src/components"],
+      "transitions": ["route requirement -> feature module/API/store -> Base UI/Tailwind component -> i18n keys -> Bun verification"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-default-frontend", "executed-fail: cd web/default && bun run typecheck failed at fixed revision due local missing frontend tool/types baseline", "executed-pass: route eval eval-route-default-frontend"],
+      "forward_eval_ids": ["eval-route-default-frontend"],
+      "cross_repo": ["none: default frontend is local to web/default"],
+      "drift_watch": ["web/default/AGENTS.md", "web/default/package.json", "web/default/src/routes", "web/default/src/features"]
+    },
+    {
+      "name": "naiapi-identity-security",
+      "risk": "medium: trust boundary mistakes affect auth, payment, or outbound fetch security",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-identity-security/SKILL.md", "middleware/auth.go", "controller/passkey.go", "controller/secure_verification.go", "common/ssrf_protection.go", "model/topup.go", "model/subscription.go"],
+      "entrypoints": ["middleware/auth.go", "controller/passkey.go", "common/ssrf_protection.go", "model/topup.go"],
+      "transitions": ["request/session/token -> authenticated context -> step-up or callback verification -> model mutation or outbound fetch"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-identity-security", "executed-pass: targeted Go tests include ./middleware ./model ./service", "executed-pass: route eval eval-route-identity-security"],
+      "forward_eval_ids": ["eval-route-identity-security"],
+      "cross_repo": ["none: security surfaces are local"],
+      "drift_watch": ["middleware/auth.go", "controller/passkey.go", "common/ssrf_protection.go", "model/topup.go", "model/subscription.go"]
+    },
+    {
+      "name": "naiapi-ops-release-diagnostics",
+      "risk": "medium: build and diagnostic changes can mask deployment failures",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-ops-release-diagnostics/SKILL.md", "main.go", "Dockerfile", "docker-compose.yml", ".github/workflows", "electron/package.json", "pkg/perf_metrics"],
+      "entrypoints": ["main.go", "Dockerfile", ".github/workflows/release.yml", "controller/performance.go"],
+      "transitions": ["source/build config -> frontend dist or backend binary -> container/CI/Electron packaging -> startup/log/metric evidence"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-ops-release-diagnostics", "executed-fail: GOCACHE=/private/tmp/naiapi-gocache go test ./... failed at fixed revision due missing embedded dist and sandbox/controller baselines", "executed-pass: route eval eval-route-ops-release-diagnostics"],
+      "forward_eval_ids": ["eval-route-ops-release-diagnostics", "eval-route-diagnostics-observability"],
+      "cross_repo": ["none: release and diagnostics files are local to this repository"],
+      "drift_watch": ["main.go", "Dockerfile", ".github/workflows", "electron/package.json", "controller/performance.go"]
+    },
+    {
+      "name": "naiapi-persistence-migrations",
+      "risk": "medium: migration mistakes can break one supported database while passing another",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-persistence-migrations/SKILL.md", "model/main.go", "model", "common/database.go", "pkg/cachex"],
+      "entrypoints": ["model/main.go", "model/*.go", "common/database.go"],
+      "transitions": ["model/schema change -> migration path -> SQLite/MySQL/PostgreSQL branching -> cache invalidation -> targeted DB tests"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-persistence-migrations", "executed-pass: targeted Go tests include ./model ./common ./pkg/cachex", "executed-pass: route eval eval-route-persistence-migrations"],
+      "forward_eval_ids": ["eval-route-persistence-migrations"],
+      "cross_repo": ["none: persistence code is local"],
+      "drift_watch": ["model/main.go", "model", "common/database.go", "pkg/cachex"]
+    },
+    {
+      "name": "naiapi-relay-channel-adapter",
+      "risk": "medium: provider conversion bugs can corrupt upstream requests or billing usage",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-relay-channel-adapter/SKILL.md", "router/relay-router.go", "controller/relay.go", "relay/relay_adaptor.go", "relay/channel/adapter.go", "relay/common/relay_info.go", "dto/openai_request.go"],
+      "entrypoints": ["router/relay-router.go", "relay/relay_adaptor.go", "relay/channel/adapter.go"],
+      "transitions": ["client JSON -> DTO/RelayInfo -> channel selection -> provider conversion -> upstream response -> downstream response/quota"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-relay-channel-adapter", "executed-pass: targeted Go tests include ./dto ./relay/channel ./relay/common", "executed-pass: route eval eval-route-relay-provider-adapters"],
+      "forward_eval_ids": ["eval-route-relay-provider-adapters", "eval-route-channel-distribution-concurrency"],
+      "cross_repo": ["none: provider relay code is local"],
+      "drift_watch": ["relay/channel/adapter.go", "relay/relay_adaptor.go", "relay/common/relay_info.go", "dto/openai_request.go"]
+    },
+    {
+      "name": "naiapi-repo-router",
+      "risk": "medium: wrong skill routing can omit a required project rule or validation loop",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-repo-router/SKILL.md", ".agents/skills/naiapi-repo-router/references/capability-coverage.json", ".agents/skills/naiapi-repo-router/evals/evals.json"],
+      "entrypoints": [".agents/skills/naiapi-repo-router/SKILL.md"],
+      "transitions": ["task signal -> primary skill -> secondary skill list -> validation evidence owner"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-repo-router", "executed-pass: route_probe.py over evals/evals.json", "executed-pass: audit_skill_depth.py over .agents/skills"],
+      "forward_eval_ids": ["eval-route-repo-router"],
+      "cross_repo": ["none: router is local; Company Jarvis remains read-only for this delivery"],
+      "drift_watch": [".agents/skills", ".agents/skills/naiapi-repo-router/references/capability-coverage.json", ".agents/skills/naiapi-repo-router/references/skill-depth.json"]
+    },
+    {
+      "name": "naiapi-task-relay-lifecycle",
+      "risk": "medium: async task settlement mistakes can overcharge, undercharge, or lose task state",
+      "level": "L1",
+      "authority": [".agents/skills/naiapi-task-relay-lifecycle/SKILL.md", "relay/relay_task.go", "relay/channel/task", "service/task_polling.go", "service/task_billing.go", "model/task.go"],
+      "entrypoints": ["relay/relay_task.go", "relay/channel/task", "service/task_polling.go"],
+      "transitions": ["task submit -> origin/remix resolution -> estimate billing -> ForcePreConsume -> upstream task id -> polling terminal state -> final quota/refund"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/naiapi-task-relay-lifecycle", "executed-pass: targeted Go tests include ./service and task billing tests", "executed-pass: route eval eval-route-task-relay-lifecycle"],
+      "forward_eval_ids": ["eval-route-task-relay-lifecycle"],
+      "cross_repo": ["none: task providers and task model are local"],
+      "drift_watch": ["relay/relay_task.go", "relay/channel/task", "service/task_polling.go", "service/task_billing.go", "model/task.go"]
+    },
+    {
+      "name": "shadcn-ui",
+      "risk": "medium: component-generation drift can bypass project aliases or Base UI/Tailwind conventions",
+      "level": "L1",
+      "authority": [".agents/skills/shadcn-ui/SKILL.md", ".agents/skills/shadcn-ui/vendor/shadcn/SKILL.md", "web/default/components.json"],
+      "entrypoints": ["web/default/components.json", ".agents/skills/shadcn-ui/SKILL.md"],
+      "transitions": ["UI request -> shadcn project context -> vendored component rules -> web/default implementation -> frontend validation"],
+      "mechanical_controls": ["executed-pass: quick_validate.py .agents/skills/shadcn-ui", "executed-pass: route eval eval-route-shadcn-ui"],
+      "forward_eval_ids": ["eval-route-shadcn-ui"],
+      "cross_repo": ["none: vendored shadcn context is stored inside this repository"],
+      "drift_watch": [".agents/skills/shadcn-ui/SKILL.md", ".agents/skills/shadcn-ui/vendor/shadcn", "web/default/components.json"]
+    }
+  ]
+}

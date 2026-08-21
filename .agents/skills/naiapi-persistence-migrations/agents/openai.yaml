@@ -1,0 +1,7 @@
+interface:
+  display_name: "nAiApi Persistence"
+  short_description: "Cross-database model and migration guidance."
+  brand_color: "#166534"
+  default_prompt: "Use $naiapi-persistence-migrations to maintain this cross-database persistence change."
+policy:
+  allow_implicit_invocation: true

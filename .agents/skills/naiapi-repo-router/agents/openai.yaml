@@ -1,0 +1,7 @@
+interface:
+  display_name: "nAiApi Router"
+  short_description: "Routes nAiApi work to repo-local skills."
+  brand_color: "#2563EB"
+  default_prompt: "Use $naiapi-repo-router to route this nAiApi task to the right repo-local skill."
+policy:
+  allow_implicit_invocation: true

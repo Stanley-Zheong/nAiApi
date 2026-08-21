@@ -1,0 +1,393 @@
+{
+  "schema_version": 2,
+  "repository": "Stanley-Zheong/nAiApi",
+  "fixed_revision": "23385008d692b6e6f255156cd820f231d3623d72",
+  "history_range": "2025-08-21T00:00:00Z..23385008d692b6e6f255156cd820f231d3623d72",
+  "history_commit_count": 1876,
+  "history_code_read_evidence": "jarvis-build/work/repositories/nAiApi/evidence/commit-code-read-coverage.jsonl",
+  "categories": [
+    {
+      "name": "build",
+      "status": "covered",
+      "surface_ids": ["surface-build-release"],
+      "capability_ids": ["cap-ops-release-diagnostics"],
+      "evidence": ["Docker, compose, CI release workflows, embedded frontend dist behavior, and Electron packaging are present."]
+    },
+    {
+      "name": "runtime",
+      "status": "covered",
+      "surface_ids": ["surface-relay-provider-runtime", "surface-default-frontend-runtime"],
+      "capability_ids": ["cap-relay-provider-adapters", "cap-default-frontend", "cap-shadcn-ui"],
+      "evidence": ["Relay API runtime and default React frontend runtime are active business surfaces at the fixed revision."]
+    },
+    {
+      "name": "lifecycle",
+      "status": "covered",
+      "surface_ids": ["surface-task-lifecycle"],
+      "capability_ids": ["cap-task-relay-lifecycle"],
+      "evidence": ["Async task submit, polling, conversion, billing, and refund lifecycle are implemented across relay, service, model, and controller layers."]
+    },
+    {
+      "name": "config",
+      "status": "covered",
+      "surface_ids": ["surface-billing-config"],
+      "capability_ids": ["cap-billing-pricing"],
+      "evidence": ["Model ratios, group ratios, billing expression config, and pricing UI/API are repository-owned configuration surfaces."]
+    },
+    {
+      "name": "concurrency",
+      "status": "covered",
+      "surface_ids": ["surface-channel-distribution-concurrency"],
+      "capability_ids": ["cap-channel-distribution-concurrency"],
+      "evidence": ["Channel selection, affinity caches, rate limits, retry behavior, and polling tasks are concurrency-sensitive runtime controls."]
+    },
+    {
+      "name": "security",
+      "status": "covered",
+      "surface_ids": ["surface-identity-security"],
+      "capability_ids": ["cap-identity-security"],
+      "evidence": ["Authentication, token access, passkeys, SSRF, webhook, and payment callback trust boundaries are active security surfaces."]
+    },
+    {
+      "name": "diagnostics",
+      "status": "covered",
+      "surface_ids": ["surface-ops-diagnostics"],
+      "capability_ids": ["cap-diagnostics-observability"],
+      "evidence": ["Performance metrics, middleware instrumentation, logging, startup tasks, and operations settings cover diagnostic work."]
+    },
+    {
+      "name": "compatibility",
+      "status": "covered",
+      "surface_ids": ["surface-cross-db-persistence", "surface-classic-default-sync", "surface-frontend-i18n"],
+      "capability_ids": ["cap-persistence-migrations", "cap-classic-default-sync", "cap-i18n-translate"],
+      "evidence": ["The repository must preserve SQLite/MySQL/PostgreSQL compatibility, classic-to-default frontend parity, and six-locale default frontend translations."]
+    },
+    {
+      "name": "repo-specific",
+      "status": "covered",
+      "surface_ids": ["surface-repo-routing"],
+      "capability_ids": ["cap-repo-router"],
+      "evidence": ["nAiApi-specific work needs a router because provider relay, billing, task, frontend, and security surfaces overlap heavily."]
+    }
+  ],
+  "surface_inventory": [
+    {
+      "id": "surface-build-release",
+      "category": "build",
+      "name": "Build, packaging, and release automation",
+      "status": "present",
+      "entrypoints": ["Dockerfile", "Dockerfile.dev", "docker-compose.yml", ".github/workflows/release.yml", ".github/workflows/docker-build.yml", "electron/package.json"],
+      "evidence": ["History scan counted ops-release changes; current fixed revision embeds frontend dist paths in main.go."],
+      "capability_ids": ["cap-ops-release-diagnostics"]
+    },
+    {
+      "id": "surface-relay-provider-runtime",
+      "category": "runtime",
+      "name": "Unified AI API relay runtime",
+      "status": "present",
+      "entrypoints": ["router/relay-router.go", "controller/relay.go", "relay/relay_adaptor.go", "relay/channel/adapter.go", "relay/common/relay_info.go"],
+      "evidence": ["History scan counted 733 relay-provider-adapters commits; current router exposes chat, messages, responses, realtime, image, audio, embeddings, rerank, and task-compatible endpoints."],
+      "capability_ids": ["cap-relay-provider-adapters"]
+    },
+    {
+      "id": "surface-default-frontend-runtime",
+      "category": "runtime",
+      "name": "Default React admin frontend",
+      "status": "present",
+      "entrypoints": ["web/default/package.json", "web/default/AGENTS.md", "web/default/src/routes", "web/default/src/features", "web/default/components.json"],
+      "evidence": ["History scan counted 601 frontend-default commits; current app uses React 19, Rsbuild, Base UI, Tailwind, TanStack Router, and i18next."],
+      "capability_ids": ["cap-default-frontend", "cap-shadcn-ui"]
+    },
+    {
+      "id": "surface-task-lifecycle",
+      "category": "lifecycle",
+      "name": "Async task relay lifecycle",
+      "status": "present",
+      "entrypoints": ["relay/relay_task.go", "relay/channel/task", "service/task_polling.go", "service/task_billing.go", "model/task.go"],
+      "evidence": ["History scan counted 178 async-task-relay commits; current TaskAdaptor contract includes estimate, submit adjustment, completion adjustment, polling, and OpenAI video conversion."],
+      "capability_ids": ["cap-task-relay-lifecycle"]
+    },
+    {
+      "id": "surface-billing-config",
+      "category": "config",
+      "name": "Pricing and billing configuration",
+      "status": "present",
+      "entrypoints": ["pkg/billingexpr/expr.md", "pkg/billingexpr", "relay/helper/price.go", "service/billing_session.go", "service/tiered_settle.go", "setting/billing_setting", "setting/ratio_setting", "controller/pricing.go"],
+      "evidence": ["History scan counted 303 billing-pricing commits; current fixed revision has expression-based pricing, pre-consume, and settlement flows."],
+      "capability_ids": ["cap-billing-pricing"]
+    },
+    {
+      "id": "surface-channel-distribution-concurrency",
+      "category": "concurrency",
+      "name": "Channel distribution, retry, affinity, and rate limiting",
+      "status": "present",
+      "entrypoints": ["middleware/distributor.go", "service/channel_select.go", "service/channel_affinity.go", "common/rate-limit.go", "middleware/rate-limit.go", "controller/channel-test.go"],
+      "evidence": ["Current relay preflight selects channels under group/model constraints, affinity caches, retry behavior, and rate-limit middleware."],
+      "capability_ids": ["cap-channel-distribution-concurrency"]
+    },
+    {
+      "id": "surface-identity-security",
+      "category": "security",
+      "name": "Identity, auth, outbound fetch, and payment trust boundaries",
+      "status": "present",
+      "entrypoints": ["middleware/auth.go", "middleware/header_nav.go", "controller/passkey.go", "controller/secure_verification.go", "common/ssrf_protection.go", "model/topup.go", "model/subscription.go"],
+      "evidence": ["History scan counted 200 identity-security commits; current fixed revision includes Passkey, token auth, SSRF validation, and PaymentProvider callback guards."],
+      "capability_ids": ["cap-identity-security"]
+    },
+    {
+      "id": "surface-ops-diagnostics",
+      "category": "diagnostics",
+      "name": "Operational diagnostics and performance metrics",
+      "status": "present",
+      "entrypoints": ["main.go", "controller/performance.go", "middleware/performance.go", "pkg/perf_metrics", "setting/performance_setting", "setting/perf_metrics_setting", "common/sys_log.go"],
+      "evidence": ["History scan counted 172 observability-diagnostics commits; current startup and middleware surfaces expose logging and performance metrics behavior."],
+      "capability_ids": ["cap-diagnostics-observability"]
+    },
+    {
+      "id": "surface-cross-db-persistence",
+      "category": "compatibility",
+      "name": "Cross-database persistence and migrations",
+      "status": "present",
+      "entrypoints": ["model/main.go", "model", "common/database.go", "pkg/cachex"],
+      "evidence": ["History scan counted 194 persistence-migrations commits; current migration code defines SQLite/MySQL/PostgreSQL branches and reserved-column helpers."],
+      "capability_ids": ["cap-persistence-migrations"]
+    },
+    {
+      "id": "surface-classic-default-sync",
+      "category": "compatibility",
+      "name": "Classic-to-default frontend parity",
+      "status": "present",
+      "entrypoints": ["web/classic", "web/default", ".agents/skills/classic-to-default-sync/SKILL.md"],
+      "evidence": ["Existing repo-local skill owns commit-driven web/classic to web/default parity work."],
+      "capability_ids": ["cap-classic-default-sync"]
+    },
+    {
+      "id": "surface-frontend-i18n",
+      "category": "compatibility",
+      "name": "Default frontend localization",
+      "status": "present",
+      "entrypoints": ["web/default/src/i18n", "web/default/src/i18n/locales", ".agents/skills/i18n-translate/SKILL.md"],
+      "evidence": ["History scan counted 90 frontend-i18n commits; current default frontend supports en, zh, fr, ru, ja, and vi."],
+      "capability_ids": ["cap-i18n-translate"]
+    },
+    {
+      "id": "surface-repo-routing",
+      "category": "repo-specific",
+      "name": "nAiApi repository task-family routing",
+      "status": "present",
+      "entrypoints": [".agents/skills/naiapi-repo-router/SKILL.md", ".agents/skills/naiapi-repo-router/references/skill-depth.json", ".agents/skills/naiapi-repo-router/evals/evals.json"],
+      "evidence": ["Current repository has overlapping relay, billing, task, frontend, persistence, and security work families that require explicit routing."],
+      "capability_ids": ["cap-repo-router"]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "cap-ops-release-diagnostics",
+      "category": "build",
+      "task_family": "Maintain build, deployment, packaging, and release diagnostics for the AI gateway.",
+      "trigger_examples": ["Docker build fails", "release workflow does not embed frontend dist", "Electron package cannot start", "startup logging needs clearer evidence"],
+      "authority": ["main.go", "Dockerfile", "docker-compose.yml", ".github/workflows", "electron/package.json", ".agents/skills/naiapi-ops-release-diagnostics/SKILL.md"],
+      "entrypoints": ["main.go", "Dockerfile", ".github/workflows/release.yml"],
+      "state_or_resource_model": "Build artifacts flow from frontend dist generation into Go embed and then container, CI, or Electron package startup.",
+      "proof": ["Targeted config/common tests", "Frontend build/typecheck baseline when packaging frontend assets", "CI workflow diff review"],
+      "route_eval_ids": ["eval-route-ops-release-diagnostics"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-ops-release-diagnostics",
+      "evidence": ["Current `main.go` embeds both default and classic dist paths; card evidence records full-suite baseline failure when dist files are absent."],
+      "merge_split_rationale": "Build/release/diagnostics cross the runtime boundary and need different checks from provider relay or frontend feature work.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and baseline test evidence."
+    },
+    {
+      "id": "cap-relay-provider-adapters",
+      "category": "runtime",
+      "task_family": "Maintain provider adapters and request/response conversion for the unified relay API.",
+      "trigger_examples": ["Add a channel", "Fix Claude or Gemini conversion", "Preserve stream usage", "Map upstream model names", "Handle OpenAI Responses API"],
+      "authority": ["router/relay-router.go", "controller/relay.go", "relay/relay_adaptor.go", "relay/channel/adapter.go", "relay/common/relay_info.go", ".agents/skills/naiapi-relay-channel-adapter/SKILL.md"],
+      "entrypoints": ["router/relay-router.go", "relay/relay_adaptor.go", "relay/channel/adapter.go"],
+      "state_or_resource_model": "Client request becomes RelayInfo, channel selection, provider conversion, upstream dispatch, downstream response, quota settlement, and retry/refund on failure.",
+      "proof": ["Provider package tests", "DTO zero-value preservation tests", "StreamOptions route checks"],
+      "route_eval_ids": ["eval-route-relay-provider-adapters"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-relay-channel-adapter",
+      "evidence": ["History scan counted 733 relay-provider-adapters commits; targeted Go test evidence passed relay/channel and related packages."],
+      "merge_split_rationale": "Provider conversion is broad but shares the same adapter contracts and relay state machine; task-specific async adapters split into their own lifecycle skill.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and targeted package test evidence."
+    },
+    {
+      "id": "cap-default-frontend",
+      "category": "runtime",
+      "task_family": "Maintain the default React admin frontend and user-facing dashboard workflows.",
+      "trigger_examples": ["Change a web/default route", "Add dashboard settings UI", "Update usage logs", "Modify model or channel pages"],
+      "authority": ["web/default/AGENTS.md", "web/default/package.json", "web/default/src/routes", "web/default/src/features", ".agents/skills/naiapi-default-frontend/SKILL.md"],
+      "entrypoints": ["web/default/src/routes", "web/default/src/features", "web/default/src/components"],
+      "state_or_resource_model": "TanStack Router pages coordinate feature modules, API clients, stores, Base UI/Tailwind components, and i18next locale keys.",
+      "proof": ["Bun typecheck/build where local dependencies allow", "Feature-level component/state review", "i18n sync for visible text"],
+      "route_eval_ids": ["eval-route-default-frontend"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-default-frontend",
+      "evidence": ["History scan counted 601 frontend-default commits; card evidence records current web/default typecheck baseline failure from missing tooling/types."],
+      "merge_split_rationale": "Default frontend owns product UI work; classic commit parity, translations, and shadcn-specific composition remain separate focused skills.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and baseline typecheck evidence."
+    },
+    {
+      "id": "cap-shadcn-ui",
+      "category": "runtime",
+      "task_family": "Apply project-aware shadcn/ui component composition inside the default frontend.",
+      "trigger_examples": ["Use shadcn/ui", "Add a shadcn command dialog", "Check component aliases", "Use shadcn registry docs"],
+      "authority": ["web/default/components.json", ".agents/skills/shadcn-ui/SKILL.md", ".agents/skills/shadcn-ui/vendor/shadcn/SKILL.md"],
+      "entrypoints": ["web/default/components.json", "web/default/src/components/ui", ".agents/skills/shadcn-ui/SKILL.md"],
+      "state_or_resource_model": "Component work resolves project aliases and Base UI/Tailwind constraints before generating markup.",
+      "proof": ["shadcn skill quick validation", "Bun typecheck/build when component code changes"],
+      "route_eval_ids": ["eval-route-shadcn-ui"],
+      "disposition": "cross-cutting-skill",
+      "primary_home": "shadcn-ui",
+      "evidence": ["Existing repo-local shadcn skill vendors upstream shadcn rules and project context."],
+      "merge_split_rationale": "This remains separate from generic frontend work because registry and component composition have their own external rules.",
+      "current_state": "Covered at fixed revision with L1 routing guidance."
+    },
+    {
+      "id": "cap-task-relay-lifecycle",
+      "category": "lifecycle",
+      "task_family": "Maintain async task relay submit, remix, poll, conversion, billing adjustment, and refund flows.",
+      "trigger_examples": ["Sora video billing is wrong", "Task polling does not settle", "Remix should inherit OtherRatios", "Convert task result to OpenAI video"],
+      "authority": ["relay/relay_task.go", "relay/channel/task", "service/task_polling.go", "service/task_billing.go", "model/task.go", ".agents/skills/naiapi-task-relay-lifecycle/SKILL.md"],
+      "entrypoints": ["relay/relay_task.go", "relay/channel/task", "service/task_polling.go"],
+      "state_or_resource_model": "Task requests validate action, resolve origin task, estimate billing, pre-consume, submit upstream, persist task data, poll terminal state, and adjust/refund quota.",
+      "proof": ["Task service tests", "Provider task adapter tests", "Billing context inspection"],
+      "route_eval_ids": ["eval-route-task-relay-lifecycle"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-task-relay-lifecycle",
+      "evidence": ["History scan counted 178 async-task-relay commits; targeted Go test evidence passed service package including task billing tests."],
+      "merge_split_rationale": "Async tasks share provider-adapter mechanics but have independent lifecycle and billing transitions that justify a separate skill.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and targeted service test evidence."
+    },
+    {
+      "id": "cap-billing-pricing",
+      "category": "config",
+      "task_family": "Maintain model pricing, tiered expressions, quota conversion, pre-consume, and settlement behavior.",
+      "trigger_examples": ["Change tiered billing expression", "Fix len-based pricing", "Sync ratios", "Explain quota calculation", "Update pricing page data"],
+      "authority": ["pkg/billingexpr/expr.md", "pkg/billingexpr", "relay/helper/price.go", "service/billing_session.go", "service/tiered_settle.go", "setting/billing_setting", ".agents/skills/naiapi-billing-pricing/SKILL.md"],
+      "entrypoints": ["pkg/billingexpr/expr.md", "relay/helper/price.go", "service/billing_session.go", "service/tiered_settle.go"],
+      "state_or_resource_model": "Pricing settings resolve model/group ratio and optional expression snapshots before pre-consume; settlement recomputes or adjusts quota from usage and stored billing context.",
+      "proof": ["pkg/billingexpr tests", "service quota and settlement tests", "pricing API/UI checks"],
+      "route_eval_ids": ["eval-route-billing-pricing"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-billing-pricing",
+      "evidence": ["History scan counted 303 billing-pricing commits; targeted Go test evidence passed pkg/billingexpr and service packages."],
+      "merge_split_rationale": "Billing expression and quota accounting have shared monetary invariants and must be kept together instead of split by controller/service file.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and targeted package test evidence."
+    },
+    {
+      "id": "cap-channel-distribution-concurrency",
+      "category": "concurrency",
+      "task_family": "Maintain channel selection, retry, affinity, update/test tasks, and rate-limit coordination.",
+      "trigger_examples": ["Channel distribution is unfair", "Affinity cache returns stale channel", "Provider retry should skip disabled channels", "Rate limit interaction changed"],
+      "authority": ["middleware/distributor.go", "service/channel_select.go", "service/channel_affinity.go", "common/rate-limit.go", "middleware/rate-limit.go", "controller/channel-test.go"],
+      "entrypoints": ["middleware/distributor.go", "service/channel_select.go", "service/channel_affinity.go"],
+      "state_or_resource_model": "Authenticated requests flow through rate limits and channel selection using group/model filters, affinity state, retry state, and channel health data.",
+      "proof": ["Channel selection tests", "Affinity cache tests", "Relay retry test cases"],
+      "route_eval_ids": ["eval-route-channel-distribution-concurrency"],
+      "disposition": "focused-loop",
+      "primary_home": "naiapi-relay-channel-adapter",
+      "evidence": ["Current code contains distributor middleware, channel affinity service tests, and channel test/update controllers."],
+      "merge_split_rationale": "Concurrency concerns are a focused loop within relay ownership because they directly determine provider dispatch before adapter conversion.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and targeted package test evidence."
+    },
+    {
+      "id": "cap-identity-security",
+      "category": "security",
+      "task_family": "Maintain identity, authentication, SSRF, webhook, passkey, and payment callback trust boundaries.",
+      "trigger_examples": ["Token auth should reject a route", "Passkey step-up verification fails", "Webhook URL needs SSRF validation", "Payment callback accepted wrong gateway"],
+      "authority": ["middleware/auth.go", "controller/passkey.go", "controller/secure_verification.go", "common/ssrf_protection.go", "model/topup.go", "model/subscription.go", ".agents/skills/naiapi-identity-security/SKILL.md"],
+      "entrypoints": ["middleware/auth.go", "controller/passkey.go", "controller/secure_verification.go", "common/ssrf_protection.go"],
+      "state_or_resource_model": "Requests are authenticated through session or token context, step-up verification can bind Passkey state, outbound URLs are validated before fetch/proxy, and payment orders are bound to providers.",
+      "proof": ["Middleware tests", "Payment provider guard tests", "SSRF validation checks", "Passkey session/origin review"],
+      "route_eval_ids": ["eval-route-identity-security"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-identity-security",
+      "evidence": ["History scan counted 200 identity-security commits; targeted Go test evidence passed middleware and model packages."],
+      "merge_split_rationale": "Security-sensitive trust boundaries should remain together because fixes often span middleware, controller, model, and service layers.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and targeted package test evidence."
+    },
+    {
+      "id": "cap-diagnostics-observability",
+      "category": "diagnostics",
+      "task_family": "Maintain performance metrics, logging, health evidence, and operational troubleshooting surfaces.",
+      "trigger_examples": ["Add performance metrics", "Improve startup failure log", "Diagnose channel health display", "Expose admin performance view"],
+      "authority": ["main.go", "controller/performance.go", "middleware/performance.go", "pkg/perf_metrics", "setting/performance_setting", "common/sys_log.go"],
+      "entrypoints": ["controller/performance.go", "middleware/performance.go", "pkg/perf_metrics"],
+      "state_or_resource_model": "Runtime requests and startup tasks emit logs/metrics which flow into admin diagnostics and operational evidence without leaking sensitive fields.",
+      "proof": ["Targeted setting/common tests", "Admin diagnostics route review", "Log redaction review"],
+      "route_eval_ids": ["eval-route-diagnostics-observability"],
+      "disposition": "focused-loop",
+      "primary_home": "naiapi-ops-release-diagnostics",
+      "evidence": ["History scan counted 172 observability-diagnostics commits; current fixed revision has performance controller, middleware, and settings packages."],
+      "merge_split_rationale": "Diagnostics stay with ops/release because they are usually used to explain runtime and deployment failures rather than alter business semantics.",
+      "current_state": "Covered at fixed revision with L1 routing guidance."
+    },
+    {
+      "id": "cap-persistence-migrations",
+      "category": "compatibility",
+      "task_family": "Maintain GORM persistence and migrations across SQLite, MySQL, and PostgreSQL.",
+      "trigger_examples": ["Add a model field", "Fix migration on SQLite", "Raw SQL must work on Postgres", "Cache invalidation after model update"],
+      "authority": ["model/main.go", "model", "common/database.go", "pkg/cachex", ".agents/skills/naiapi-persistence-migrations/SKILL.md"],
+      "entrypoints": ["model/main.go", "model", "common/database.go"],
+      "state_or_resource_model": "Models migrate through GORM and guarded raw SQL into SQLite/MySQL/PostgreSQL while cache-backed helpers preserve read/write consistency.",
+      "proof": ["SQLite-backed model tests", "External DSN migration tests when available", "GORM query review"],
+      "route_eval_ids": ["eval-route-persistence-migrations"],
+      "disposition": "capability-skill",
+      "primary_home": "naiapi-persistence-migrations",
+      "evidence": ["History scan counted 194 persistence-migrations commits; targeted Go test evidence passed model package."],
+      "merge_split_rationale": "Cross-database persistence needs a dedicated compatibility owner because raw SQL and migrations have different failure modes than business handlers.",
+      "current_state": "Covered at fixed revision with L1 routing guidance and targeted model test evidence."
+    },
+    {
+      "id": "cap-classic-default-sync",
+      "category": "compatibility",
+      "task_family": "Audit a supplied web/classic commit and port missing behavior into web/default.",
+      "trigger_examples": ["classic-to-default-sync <hash>", "sync this classic commit to default", "compare web/classic changes with web/default"],
+      "authority": [".agents/skills/classic-to-default-sync/SKILL.md", "web/classic", "web/default"],
+      "entrypoints": [".agents/skills/classic-to-default-sync/SKILL.md", "web/classic", "web/default"],
+      "state_or_resource_model": "A commit diff in web/classic is decomposed into logical behavior, mapped to web/default equivalents, triaged, ported, internationalized, and verified.",
+      "proof": ["Commit diff review", "web/default focused tests or typecheck", "i18n sync if strings change"],
+      "route_eval_ids": ["eval-route-classic-default-sync"],
+      "disposition": "focused-loop",
+      "primary_home": "classic-to-default-sync",
+      "evidence": ["Existing repo-local skill already implements the classic/default parity workflow and now links the depth controls."],
+      "merge_split_rationale": "Commit-driven parity work is separate from ordinary frontend work because it starts from historical classic behavior instead of product requirements.",
+      "current_state": "Covered at fixed revision with L1 routing guidance."
+    },
+    {
+      "id": "cap-i18n-translate",
+      "category": "compatibility",
+      "task_family": "Complete and maintain default frontend translations across all supported locales.",
+      "trigger_examples": ["Run i18n sync", "Add missing locale keys", "Translate new UI labels", "Fix untranslated entries"],
+      "authority": [".agents/skills/i18n-translate/SKILL.md", "web/default/src/i18n", "web/default/src/i18n/locales"],
+      "entrypoints": [".agents/skills/i18n-translate/SKILL.md", "web/default/src/i18n/locales"],
+      "state_or_resource_model": "English source keys are synced from `t()` calls and maintained across en, zh, fr, ru, ja, and vi flat JSON locale files.",
+      "proof": ["bun run i18n:sync", "missing-key scan", "untranslated-entry scan"],
+      "route_eval_ids": ["eval-route-i18n-translate"],
+      "disposition": "focused-loop",
+      "primary_home": "i18n-translate",
+      "evidence": ["Existing repo-local i18n skill defines sync, missing-key, and translation workflows."],
+      "merge_split_rationale": "Localization work is a repeated focused loop with distinct validation commands and should not be hidden inside generic frontend guidance.",
+      "current_state": "Covered at fixed revision with L1 routing guidance."
+    },
+    {
+      "id": "cap-repo-router",
+      "category": "repo-specific",
+      "task_family": "Route nAiApi repository requests to the correct repo-local skill and coverage proof owner.",
+      "trigger_examples": ["Unknown nAiApi task", "Cross-family relay and billing task", "Repository learning route audit", "Which skill should own this change"],
+      "authority": [".agents/skills/naiapi-repo-router/SKILL.md", ".agents/skills/naiapi-repo-router/references/capability-coverage.json", ".agents/skills/naiapi-repo-router/references/skill-depth.json"],
+      "entrypoints": [".agents/skills/naiapi-repo-router/SKILL.md"],
+      "state_or_resource_model": "Request signals are mapped to task-family skills, secondary skills, boundaries, and validation evidence before implementation begins.",
+      "proof": ["Route eval suite", "Skill depth audit", "Capability coverage ledger"],
+      "route_eval_ids": ["eval-route-repo-router"],
+      "disposition": "router",
+      "primary_home": "naiapi-repo-router",
+      "evidence": ["Router names every delivered repo-local skill and points to machine-readable coverage/depth/eval files."],
+      "merge_split_rationale": "A router is required because nAiApi has overlapping provider relay, task, billing, security, frontend, persistence, and release surfaces.",
+      "current_state": "Covered at fixed revision with L1 route probes and audit script evidence."
+    }
+  ]
+}

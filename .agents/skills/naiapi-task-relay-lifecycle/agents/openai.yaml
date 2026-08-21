@@ -1,0 +1,7 @@
+interface:
+  display_name: "nAiApi Task Relay"
+  short_description: "Async task submission, polling, and billing."
+  brand_color: "#B45309"
+  default_prompt: "Use $naiapi-task-relay-lifecycle to maintain this async task relay flow."
+policy:
+  allow_implicit_invocation: true

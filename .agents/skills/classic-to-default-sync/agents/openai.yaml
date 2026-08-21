@@ -1,0 +1,7 @@
+interface:
+  display_name: "Classic to Default Sync"
+  short_description: "Ports web/classic commits into web/default."
+  brand_color: "#4338CA"
+  default_prompt: "Use $classic-to-default-sync to compare this classic commit and port missing behavior to default."
+policy:
+  allow_implicit_invocation: true

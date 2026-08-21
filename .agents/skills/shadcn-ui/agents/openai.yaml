@@ -1,0 +1,7 @@
+interface:
+  display_name: "shadcn/ui"
+  short_description: "Project-aware shadcn/ui composition context."
+  brand_color: "#111827"
+  default_prompt: "Use $shadcn-ui to compose this shadcn/ui component in web/default."
+policy:
+  allow_implicit_invocation: true
