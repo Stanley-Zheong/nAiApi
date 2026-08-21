@@ -1,0 +1,7 @@
+interface:
+  display_name: "Frontend i18n Translate"
+  short_description: "Maintains default frontend locale files."
+  brand_color: "#0D9488"
+  default_prompt: "Use $i18n-translate to sync and complete frontend translations."
+policy:
+  allow_implicit_invocation: true

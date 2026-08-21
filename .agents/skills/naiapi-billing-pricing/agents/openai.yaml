@@ -1,0 +1,7 @@
+interface:
+  display_name: "nAiApi Billing"
+  short_description: "Pricing, quota, and tiered billing guidance."
+  brand_color: "#7C3AED"
+  default_prompt: "Use $naiapi-billing-pricing to maintain this billing or pricing behavior."
+policy:
+  allow_implicit_invocation: true

@@ -1,6 +1,10 @@
 ---
 name: classic-to-default-sync
-description: Inspect a given commit's web/classic changes and sync all features/fixes to web/default. Use when the user provides a commit ID and wants to audit whether web/default already has the same features as web/classic, port missing features, improve suboptimal implementations, fix bugs, and remove redundant code. Trigger phrases include: "/classic-to-default-sync <hash>", "classic-to-default-sync <hash>", "sync classic to default", "port from classic", "compare classic commit", "classic 和 default 对比", "把这次 classic 的修改同步到 default", "查看这次提交 classic 中的修改并同步", or any request supplying a commit hash together with classic/default comparison intent.
+description: >-
+  Inspect a given commit's web/classic changes and sync features or fixes to
+  web/default. Use for classic/default comparison, parity audit, porting,
+  quality improvements, bug fixes, and requests supplying a commit hash with
+  classic/default comparison intent.
 ---
 
 # Classic-to-Default Sync
@@ -81,3 +85,12 @@ If every item is ✅ with no action needed, simply reply: **"已完成 — web/d
 - Consistent naming with surrounding `web/default` code
 - All interactive elements accessible (keyboard nav, ARIA labels where Radix doesn't provide them automatically)
 - No regressions: existing behaviour in `web/default` must not break
+
+## Depth Controls
+
+Repository-learning controls live in:
+
+- `../naiapi-repo-router/references/skill-depth.md`
+- `../naiapi-repo-router/references/skill-depth.json`
+- `../naiapi-repo-router/evals/evals.json`
+- `../naiapi-repo-router/scripts/audit_skill_depth.py`

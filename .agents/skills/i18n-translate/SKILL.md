@@ -239,6 +239,15 @@ Delete temporary scripts after completion.
 - Technical identifiers (JSON keys, API paths, model names)
 - Code-like strings (gpt-3.5-turbo, price_xxx, etc.)
 
+## Depth Controls
+
+Repository-learning controls live in:
+
+- `../naiapi-repo-router/references/skill-depth.md`
+- `../naiapi-repo-router/references/skill-depth.json`
+- `../naiapi-repo-router/evals/evals.json`
+- `../naiapi-repo-router/scripts/audit_skill_depth.py`
+
 **Always translate:**
 - UI labels, button text, error messages, descriptions
 - Time units (hours, minutes, months, years)

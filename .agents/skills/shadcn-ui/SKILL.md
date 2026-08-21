@@ -103,3 +103,12 @@ Snapshot from [shadcn-ui/ui `skills/shadcn`](https://github.com/shadcn-ui/ui/tre
 | Base vs Radix | [`vendor/shadcn/rules/base-vs-radix.md`](./vendor/shadcn/rules/base-vs-radix.md) |
 
 **Workflow:** Prefer this **root** `SKILL.md` for repo paths (`web/default`, Bun). Read **`vendor/shadcn/SKILL.md`** for the complete upstream workflow, patterns, and CLI quick reference. Use **`vendor/shadcn/rules/*.md`** when validating concrete markup.
+
+## Depth Controls
+
+Repository-learning controls live in:
+
+- `../naiapi-repo-router/references/skill-depth.md`
+- `../naiapi-repo-router/references/skill-depth.json`
+- `../naiapi-repo-router/evals/evals.json`
+- `../naiapi-repo-router/scripts/audit_skill_depth.py`

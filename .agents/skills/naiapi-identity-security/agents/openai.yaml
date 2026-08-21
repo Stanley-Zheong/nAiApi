@@ -1,0 +1,7 @@
+interface:
+  display_name: "nAiApi Security"
+  short_description: "Auth, passkey, SSRF, and payment trust boundaries."
+  brand_color: "#B91C1C"
+  default_prompt: "Use $naiapi-identity-security to review this identity or security-sensitive change."
+policy:
+  allow_implicit_invocation: true
